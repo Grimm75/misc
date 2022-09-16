@@ -104,23 +104,27 @@ def get_history_data():
         data = bytearray(packet)
         # remove 'cmd' a 'packet_sequence_number' bytes, don't care about them now
         del data[0:2]
-        # 8 byte per record - 4b 'encoded date' + int32 value ( 1 = 10nS ?! )
+        # 8 bytes per record: 4b encoded date + 4b int32 value
         for i in range(len(data) // 8):
             record = data[i * 8 : i * 8 + 8]
             (t, value) = struct.unpack(">II", record)
-            # DateTime decode:
-            # b0         b1         b2         b3
-            # YYYY YYYM  MMMD DDDD  HHHH Hmmm  mmm00000
+            # DateTime format:
+            # YYYYYYYM MMMDDDDD HHHHHmmm mmm00000
             year = (t >> 25) + 2000
             month = (t >> 21) & 15
-            day = (t >> 16) & 15
+            day = (t >> 16) & 31
             hour = (t >> 11) & 31
             minute = (t >> 5) & 63
-            # unused = t & 31
-            dt = datetime.datetime(
-                year=year, month=month, day=day, hour=hour, minute=minute
-            )
-            print(f"{dt}, {value/100}")
+            try:
+                dt = datetime.datetime(
+                    year=year, month=month, day=day, hour=hour, minute=minute
+                )
+                tsc = dt.timestamp()
+                value = value/100
+                print(f"{dt}, {int(tsc)}, {value}")
+            except Exception as e:
+                print(f"Error decoding record: {record.hex(' ', 4)}, => {year}/{month}/{day} {hour}:{minute}")
+
             measurements -= 1
     return measurements == 0
 
