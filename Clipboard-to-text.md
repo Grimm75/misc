@@ -2,7 +2,7 @@ ctt - clipboard to text shell helper
 ====================================
 (using xclip and Tesseract)
 
-- Install needed packages (Debian, Ubuntu):
+- Install packages (Debian, Ubuntu):
 
 ```
 sudo apt-get install xclip tesseract-ocr tesseract-ocr-ces tesseract-ocr-rus
@@ -20,4 +20,4 @@ alias ctt='xclip -quiet -selection clipboard -t image/png -o 2>/dev/null | tesse
 alias ctt
 ```
 
-- Enjoy.
+- Copy any image to clipboard or press `PrintScreen` key. Type `ctt`.
