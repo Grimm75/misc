@@ -121,7 +121,7 @@ l4:     mov ah,al
         jnc l3
         sub di,bp
         pop ax
-        lea ax,short [eax+eax*2]                ;one opcode "RAND"
+        lea ax,short [eax+eax*2]        ;one opcode "RAND"
         push ax
         mov es:[di],bh
         and ah,00100000b
