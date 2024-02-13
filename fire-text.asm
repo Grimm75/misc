@@ -15,14 +15,16 @@
         org 100h
 section .text
 
-beg:    mov ax,1130h                    ;startup section
-        mov bh,2
-        int 10h
-        push es
-        pop fs
-        mov [font],bp
+beg:    ;mov ax,1130h                    ;startup section
+        ;mov bh,2
+        ;int 10h
+        ;push es
+        ;pop fs
+        ;mov word [font],bp
         mov ax,13h
         int 10h
+
+        xor ax,ax
         xor cx,cx
         mov bx,cx
         mov dx,3c8h
@@ -66,38 +68,47 @@ ll3:    xchg ax,bx
         mov al,63
 ll4:    out dx,al
         loop ll4
-        mov cl,31
-ll5:    xor ax,ax
-        out dx,al
-        mov al,cl
-        shl ax,1
-        out dx,al
-        mov bl,62
-        sub bl,cl
-        mov al,bl
-        out dx,al
-        loop ll5
-        mov cl,31
-ll6:    xor ax,ax
-        out dx,al
-        mov bl,cl
-        shl bl,1
-        mov al,62
-        sub al,bl
-        out dx,al
-        mov al,bl
-        out dx,al
-        loop ll6
-        push dx
-        mov ax,3508h
-        int 21h
-        mov [oldint],bx
-        mov [oldint+2],es
-        push 0a000h
+
+;        jmp rs
+;
+;
+;        mov cl,31
+;ll5:    xor ax,ax
+;        out dx,al
+;        mov al,cl
+;        shl ax,1
+;        out dx,al
+;        mov bl,62
+;        sub bl,cl
+;        mov al,bl
+;        out dx,al
+;        loop ll5
+;        mov cl,31
+;ll6:    xor ax,ax
+;        out dx,al
+;        mov bl,cl
+;        shl bl,1
+;        mov al,62
+;        sub al,bl
+;        out dx,al
+;        mov al,bl
+;        out dx,al
+;        loop ll6
+;
+;rs:
+;        push dx    ; why?
+;       mov ax,3508h
+;       int 21h
+;        mov [oldint],bx
+;        mov [oldint+2],es
+        push word 0a000h
         pop es
-        mov dx,timer
-        mov ax,2508h
-        int 21h
+        mov byte [es:10],1
+;        mov dx,timer
+;        mov ax,2508h
+;        int 21h
+
+
 
         mov bp,640                      ;main section
 l1:     mov cx,320
@@ -132,24 +143,24 @@ l5:     dec cx
         cmp al,1
         jne short l1
 
-        mov dx,[oldint]          ;cleanup section
-        mov ds,[oldint+2]
-        mov ax,2508h
-        int 21h
+;       mov dx,[oldint]          ;cleanup section
+;       mov ds,[oldint+2]
+;       mov ax,2508h
+;       int 21h
         mov ax,3
         int 10h
-        pop dx
+;        pop dx
         ret
 
 timer:   ;PROC FAR                        ;interrupt handler
         pusha
-        mov cl,intext
+        mov cl,byte [intext]
         cmp cl,8
         jne short xl1
         inc byte [poradi]
         mov byte [intext],0
 xl1:    mov di,text
-        add di,poradi
+        add di,[poradi]
         cmp byte [ds:di],0
         jne short xl2
         sub di,poradi
